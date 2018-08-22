@@ -1,5 +1,5 @@
 {
-    "name": "lemberg/draft-environment",
+    "name": "oh17l/draft-environment",
     "description": "Development environment for Draft Drupal.",
     "type": "vm",
     "license": "GPL-2.0-or-later",
