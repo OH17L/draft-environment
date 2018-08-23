@@ -7,6 +7,14 @@ This is Vagrant-based development environment for Drupal projects. This project 
 ## Prerequisites
 
 - PHP/Composer
+
+### Docker
+
+- Docker
+- docker-compose
+
+### Vagrant
+
 - Vagrant
 - VirtualBox
 
@@ -49,6 +57,10 @@ Dramatically increases disk IO on Windows by adding NFS support.
 
 1. Create and configure guest machine:
 
+    ```
+    $ docker-compose up -d
+    ```
+    or
     ```
     $ vagrant up
     ```
