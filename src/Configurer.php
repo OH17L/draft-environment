@@ -19,7 +19,7 @@ class Configurer {
     $composer = $event->getComposer();
 
     // This package can be utilized as a root package (for example in Travis CI).
-    if ($composer->getPackage()->getName() === 'lemberg/draft-environment') {
+    if ($composer->getPackage()->getName() === 'oh17l/draft-environment') {
       $installPath = '.';
     }
     else {
@@ -27,7 +27,7 @@ class Configurer {
       $package = $composer
           ->getRepositoryManager()
           ->getLocalRepository()
-          ->findPackage('lemberg/draft-environment', '*');
+          ->findPackage('oh17l/draft-environment', '*');
 
       if ($package) {
         $installPath = $composer
@@ -35,16 +35,21 @@ class Configurer {
             ->getInstallPath($package);
       }
       else {
-        throw new \RuntimeException('lemberg/draft-environment package not found in local repository.');
+        throw new \RuntimeException('oh17l/draft-environment package not found in local repository.');
       }
     }
 
+    $io = $event->getIO();
+    $vagrant = $io->select('What type of environment do you want to use?', ['Vagrant', 'Docker'], 0) == 0;
+
     // Assume VM settings has already been set.
     if (!file_exists("./vm-settings.yml")) {
-      $io = $event->getIO();
-
       $parser = new Parser();
       $config = $parser->parse(file_get_contents("$installPath/default.vm-settings.yml"));
+
+      if (!$vagrant) {
+        $config['environment_type'] = 'docker';
+      }
 
       // Set project name.
       $project_name_question = <<<HERE
@@ -58,6 +63,10 @@ Project name
 HERE;
       $default_project_name = 'default-' . time();
       $config['vagrant']['hostname'] = $io->askAndValidate(static::addQuestionMarkup($project_name_question, $default_project_name), [__CLASS__, 'validateProjectName'], NULL, $default_project_name);
+
+      if (!$vagrant) {
+        file_put_contents('./.env', "PROJECT_NAME={$config['vagrant']['hostname']}\n");
+      }
 
       $io->write('');
       $io->write('<info>Now you can make some coffee. It won\'t take too long though. Just relax and run</info> <comment>vagrant up</comment>');

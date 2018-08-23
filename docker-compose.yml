@@ -2,7 +2,7 @@ version: "2"
 
 services:
   mariadb:
-    image: wodby/mariadb:$MARIADB_TAG
+    image: wodby/mariadb:10.1-3.2.1
     container_name: "${PROJECT_NAME}_mariadb"
     stop_grace_period: 30s
     environment:
@@ -12,20 +12,20 @@ services:
       MYSQL_PASSWORD: $DB_PASSWORD
 
   php:
-    image: wodby/drupal-php:$PHP_TAG
+    image: wodby/drupal-php:7.1-dev-4.5.1
     container_name: "${PROJECT_NAME}_php"
     environment:
       PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
-      DB_HOST: $DB_HOST
-      DB_USER: $DB_USER
-      DB_PASSWORD: $DB_PASSWORD
-      DB_NAME: $DB_NAME
-      DB_DRIVER: $DB_DRIVER
+      DB_HOST: mariadb
+      DB_USER: drupal
+      DB_PASSWORD: drupal
+      DB_NAME: drupal
+      DB_DRIVER: mysql
     volumes:
       - ./:/var/www/html
 
   nginx:
-    image: wodby/drupal-nginx:$NGINX_TAG
+    image: wodby/drupal-nginx:8-1.15-4.2.0
     container_name: "${PROJECT_NAME}_nginx"
     depends_on:
       - php
@@ -39,7 +39,7 @@ services:
     labels:
     - 'traefik.backend=nginx'
     - 'traefik.port=80'
-    - 'traefik.frontend.rule=Host:${PROJECT_BASE_URL}'
+    - 'traefik.frontend.rule=Host:${PROJECT_NAME}.test'
 
   mailhog:
     image: mailhog/mailhog
@@ -47,7 +47,7 @@ services:
     labels:
       - 'traefik.backend=mailhog'
       - 'traefik.port=8025'
-      - 'traefik.frontend.rule=Host:mailhog.${PROJECT_BASE_URL}'
+      - 'traefik.frontend.rule=Host:mailhog.${PROJECT_NAME}.test'
 
   traefik:
     image: traefik

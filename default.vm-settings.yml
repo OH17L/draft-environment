@@ -6,6 +6,8 @@
 # If there is a need to override any value, create file vm-settings.local.yml
 # and put it there. Local settings should not be committed to the repository.
 
+environment_type: vagrant
+
 # Vagrant configuration.
 vagrant:
   # Box to use. At the moment Debian-based distributions are supported only.
