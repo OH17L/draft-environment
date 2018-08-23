@@ -80,17 +80,22 @@ HERE;
       file_put_contents("./vm-settings.yml", $yaml->dump($config, PHP_INT_MAX));
     }
 
-    // Assume Vagrantfile has already been configured.
-    if (!file_exists("./Vagrantfile")) {
-      $vendor_dir = trim($composer->getConfig()->get('vendor-dir', Config::RELATIVE_PATHS), DIRECTORY_SEPARATOR);
-      if ($vendor_dir !== 'vendor') {
-        $vagrantfile = file_get_contents("$installPath/Vagrantfile.proxy");
-        $vagrantfile = str_replace('/vendor/', "/$vendor_dir/", $vagrantfile);
-        file_put_contents("./Vagrantfile", $vagrantfile);
+    if ($vagrant) {
+      // Assume Vagrantfile has already been configured.
+      if (!file_exists("./Vagrantfile")) {
+        $vendor_dir = trim($composer->getConfig()->get('vendor-dir', Config::RELATIVE_PATHS), DIRECTORY_SEPARATOR);
+        if ($vendor_dir !== 'vendor') {
+          $vagrantfile = file_get_contents("$installPath/Vagrantfile.proxy");
+          $vagrantfile = str_replace('/vendor/', "/$vendor_dir/", $vagrantfile);
+          file_put_contents("./Vagrantfile", $vagrantfile);
+        }
+        else {
+          copy("$installPath/Vagrantfile.proxy", "./Vagrantfile");
+        }
       }
-      else {
-        copy("$installPath/Vagrantfile.proxy", "./Vagrantfile");
-      }
+    }
+    else {
+      copy("$installPath/docker-compose.yml", "./docker-compose.yml");
     }
   }
 
