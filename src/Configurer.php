@@ -39,13 +39,14 @@ class Configurer {
       }
     }
 
-    $io = $event->getIO();
-    $vagrant = $io->select('What type of environment do you want to use?', ['Vagrant', 'Docker'], 0) == 0;
-
     // Assume VM settings has already been set.
     if (!file_exists("./vm-settings.yml")) {
+      $io = $event->getIO();
+
       $parser = new Parser();
       $config = $parser->parse(file_get_contents("$installPath/default.vm-settings.yml"));
+
+      $vagrant = $io->select('What type of environment do you want to use?', ['Vagrant', 'Docker'], 0) == 0;
 
       if (!$vagrant) {
         $config['environment_type'] = 'docker';
