@@ -71,7 +71,8 @@ HERE;
       $config['vagrant']['hostname'] = $io->askAndValidate(static::addQuestionMarkup($project_name_question, $default_project_name), [__CLASS__, 'validateProjectName'], NULL, $default_project_name);
 
       if (!$vagrant) {
-        file_put_contents('./.env', "PROJECT_NAME={$config['vagrant']['hostname']}\n");
+        $env = file_get_contents('./.env');
+        file_put_contents("$installPath/.env", "PROJECT_NAME={$config['vagrant']['hostname']}\n{$env}");
       }
 
       $io->write('');
